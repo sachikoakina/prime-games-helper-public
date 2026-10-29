@@ -9,8 +9,6 @@ GitHub Actions 每 6 小时自动运行一次：
 3. `scraper/check_ready.py`：健康检查，抓取不完整就跳过本轮推送（避免把正常游戏误删）
 4. `scraper/push_cloud.py`：合并数据并推送到云开发数据库（经 HTTP 网关）
 
-小程序端通过云函数 `getGames` 读取这批数据。
-
 ## 启用前：配置两个 Secrets
 
 仓库 `Settings → Secrets and variables → Actions` 新增：
