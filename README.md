@@ -31,6 +31,24 @@ python scraper/push_cloud.py              # 推送（读 INGEST_URL / INGEST_TOK
 
 以上脚本只用 Python 标准库，无需 `pip install`，也不需要 Playwright。
 
+## 状态怎么读
+
+`free.json` 里的 `status` 每个源只有三种值：
+
+| 值 | 含义 | 该怎么做 |
+|---|---|---|
+| `ok` | 抓到条目 | — |
+| `empty` | 抓取成功，但当前确实没有活动 | 正常，不用管；若上次非空会打印提醒 |
+| `unreachable` | 源不可达（网络/超时/HTTP 错误），已保留上次数据 | 健康检查会跳过本轮推送 |
+
+两个容易误判的点：
+
+- **GOG 长期是 `empty`**：GOG 官方赠品页 `https://www.gog.com/en/giveaways` 已下线（恒 404），
+  没有可用的官方源，GOG 只能靠 GamerPower 与 freetokeep 两个聚合站；两家都报"无活动"时
+  就是真的没有活动，不是抓取坏了。
+- **GamerPower 无活动时不返回空数组**，而是 `HTTP 201` + `{"status":0,"status_message":...}`。
+  `fetch_gamerpower` 已按 `status` 分流：`0` = 空态（不报错）、非 0 = 真报错（打印原因）。
+
 ## 目录
 
 ```

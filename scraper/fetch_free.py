@@ -14,8 +14,16 @@ Epic   主源  Epic 官方 API
                        locale=en-US&country=US（拿美元原价）
        交叉  https://freetokeep.gg/api/v1/offers?store=epic   （免 key JSON API）
              https://www.gamerpower.com/api/giveaways?platform=epic-games-store
-GOG    主源  https://www.gog.com/en/giveaways （404 = 当前无活动，空态属正常）
-       交叉  freetokeep ?store=gog、GamerPower ?platform=gog
+GOG    主源  （无可用官方源）https://www.gog.com/en/giveaways 现已 404，
+             官方赠品页与 /giveaway/claim（需登录）都抓不了；catalog 的
+             priceRange=0,0 混着数千款常驻免费游戏，不能当活动源。
+             因此 GOG 实际以 GamerPower 为主、freetokeep 为交叉；
+             官方页仍会尝试一次，哪天恢复了自动生效。
+       交叉  https://www.gamerpower.com/api/giveaways?platform=gog
+             https://freetokeep.gg/api/v1/offers?store=gog
+             注意：GamerPower 在「该平台当前无活动」时返回 HTTP 201 +
+             {"status":0,"status_message":"No active giveaways ..."}，
+             这是空态而非故障，必须按 0 条处理（见 fetch_gamerpower）。
 Steam  主源  https://store.steampowered.com/api/featuredcategories（specials 里
              discount_percent==100 且 original_price>0 = Free to keep）
        交叉  freetokeep ?store=steam
@@ -26,6 +34,7 @@ Steam  主源  https://store.steampowered.com/api/featuredcategories（specials 
 ----------------------------------
 1. 并集：所有源按「归一标题」合并，互不删除（宁多勿漏）。
 2. 时间：官方源（Epic API / Steam API / GOG 页面）的 startAt/endAt 覆盖聚合源。
+   （GOG 目前没有可用的官方源，该档实际不会触发，GOG 条目一律是 low）
 3. 标题：取官方源；titleZh 仅当官方源返回含中文（CJK）才写入，否则留空交给 meta.js。
 4. 价格：优先官方美元价（美分/100）；没有就不填，不做汇率换算。
 5. 溯源：sources 记录命中的源名；含官方源 → confidence=high，仅聚合源 → low。
@@ -177,7 +186,10 @@ def now_utc():
 
 
 def iso(ms):
-    return datetime.utcfromtimestamp(ms / 1000).strftime("%Y-%m-%dT%H:%M:%S.000Z")
+    # 用 timezone-aware 的 fromtimestamp 取代已废弃的 utcfromtimestamp
+    # （Python 3.12+ 会报 DeprecationWarning，输出格式保持不变）
+    return datetime.fromtimestamp(ms / 1000, timezone.utc).strftime(
+        "%Y-%m-%dT%H:%M:%S.000Z")
 
 
 def active_window_ms(start_iso, end_iso, now):
@@ -356,17 +368,52 @@ def fetch_freetokeep(store):
     return list(out.values()), ""
 
 
+# GamerPower 在「该平台当前没有活动」时不返回空数组，而是返回
+#   HTTP 201 + {"status":0,"status_message":"No active giveaways available ..."}
+# 这是**正常空态**，不是接口坏了。早期版本把「非 list」一律当结构异常，
+# 于是 GOG（长期没有活动）每次都被误报成抓取失败。下面按状态码分流。
+GAMERPOWER_LIST_KEYS = ("giveaways", "data", "results", "items", "offers")
+GAMERPOWER_EMPTY_CODES = (0, "0")
+
+
 def fetch_gamerpower(plat):
-    """GamerPower giveaways；end_date 无时区按 UTC 处理"""
+    """GamerPower giveaways；end_date 无时区按 UTC 处理。
+
+    返回 (items, err)：
+      - 正常有活动 → (列表, "")
+      - 正常无活动 → ([], "")      ← 空态，由调用方按「当前无活动」处理
+      - 真异常     → ([], 错误说明)  ← 不可达 / 非 JSON / 未知结构 / status 非 0
+    """
     body, err = http_get(GAMERPOWER.format(plat=plat))
     if body is None:
         return [], "gamerpower 不可达：" + err
     try:
-        items = json.loads(body.decode("utf-8", "ignore")) or []
+        data = json.loads(body.decode("utf-8", "ignore"))
     except Exception as e:  # noqa: BLE001
         return [], "gamerpower json:" + str(e)[:80]
-    if not isinstance(items, list):
-        return [], "gamerpower 返回结构异常（%s）" % type(items).__name__
+
+    # 形态一：把数组包了一层对象（{"status":0,"giveaways":[...]}），先拆壳
+    if isinstance(data, dict):
+        for key in GAMERPOWER_LIST_KEYS:
+            if isinstance(data.get(key), list):
+                data = data[key]
+                break
+        else:
+            code = data.get("status")
+            msg = str(data.get("status_message") or data.get("message") or "").strip()
+            if code in GAMERPOWER_EMPTY_CODES:
+                return [], ""                      # 空态：该平台当前没有活动
+            if not data:
+                return [], ""                      # 空对象，同样按无活动处理
+            if code is not None:
+                return [], "gamerpower 报错（status=%s）：%s" % (
+                    code, msg[:80] or "无说明")
+            return [], "gamerpower 返回未知结构（keys=%s）" % ",".join(
+                list(data.keys())[:5])
+
+    if not isinstance(data, list):
+        return [], "gamerpower 返回非数组（%s）" % type(data).__name__
+    items = data
     out = []
     for it in items:
         if not isinstance(it, dict):
@@ -397,7 +444,12 @@ def fetch_gamerpower(plat):
 
 
 def fetch_gog_official():
-    """GOG 官方 giveaways 页；404 / 无数据 = 当前无活动（空态属正常）"""
+    """GOG 官方 giveaways 页（best-effort）。
+
+    注意：该页 https://www.gog.com/en/giveaways 目前恒为 404（GOG 已下线），
+    所以 404 既不代表「无活动」也不代表「出错」，这里一律返回 ([], "") 让
+    GOG 走聚合源；只有真正的网络错误才返回 err。页面若恢复，正则解析自动生效。
+    """
     body, err = http_get(GOG_PAGE)
     if body is None:
         # 404 也走这里 —— 当前无活动，不是错误
@@ -585,14 +637,21 @@ def main():
                 print("  [交叉] " + err3)
             items = merge_section(main_items, cross + gp, {"epic-api"}, now_ms)
         elif store == "gog":
+            # GOG 没有可用的官方源（/en/giveaways 已 404）：GamerPower 当主源、
+            # freetokeep 当交叉。官方页仍 best-effort 试一次，哪天恢复就自动生效。
             main_items, err = fetch_gog_official()
-            cross, err2 = fetch_freetokeep("gog")
-            if err2:
-                print("  [交叉] " + err2)
             gp, err3 = fetch_gamerpower("gog")
             if err3:
                 print("  [交叉] " + err3)
-            items = merge_section(main_items, cross + gp, {"gog-page"}, now_ms)
+            elif not gp:
+                print("  [i] gamerpower：该平台当前无活动（空态，不是故障）")
+            cross, err2 = fetch_freetokeep("gog")
+            if err2:
+                print("  [交叉] " + err2)
+            items = merge_section(main_items + gp, cross, {"gog-page"}, now_ms)
+            if not items:
+                print("  [i] GOG 无条目：官方源 404（该页早已下线）、"
+                      "GamerPower 空态、freetokeep %d 条 —— 当前确无活动" % len(cross))
         else:  # steam
             main_items, err = fetch_steam_official()
             cross, err2 = fetch_freetokeep("steam")
