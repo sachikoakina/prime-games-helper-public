@@ -1,0 +1,136 @@
+{
+  "updatedAt": "2026-10-25T04:53:27.000Z",
+  "status": {
+    "epic": "ok",
+    "gog": "empty",
+    "steam": "empty"
+  },
+  "epic": [
+    {
+      "id": "epicfree-sker-ritual",
+      "title": "Sker Ritual",
+      "titleZh": "",
+      "platform": "Epic Games Store",
+      "requiresPrime": false,
+      "giveaway": "epic",
+      "price": 24.99,
+      "startAt": "2026-10-22T15:00:00.000Z",
+      "endAt": "2026-10-29T23:59:59.000Z",
+      "isCode": false,
+      "codeExpireAt": "",
+      "claimUrl": "https://store.epicgames.com/p/sker-ritual-aac702",
+      "sourceUrl": "https://store.epicgames.com/free-games",
+      "cover": "https://cdn1.epicgames.com/spt-assets/43d96f4437e34c87b7eff08831d1b1de/sker-ritual-1cyza.png",
+      "sources": [
+        "epic-api",
+        "freetokeep",
+        "gamerpower"
+      ],
+      "platforms": [
+        "pc"
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "epicfree-home-a-unique-horror-adventure",
+      "title": "Home - A Unique Horror Adventure",
+      "titleZh": "",
+      "platform": "Epic Games Store",
+      "requiresPrime": false,
+      "giveaway": "epic",
+      "price": 4.99,
+      "startAt": "2026-10-22T15:00:00.000Z",
+      "endAt": "2026-10-29T23:59:59.000Z",
+      "isCode": false,
+      "codeExpireAt": "",
+      "claimUrl": "https://store.epicgames.com/p/home-19212a",
+      "sourceUrl": "https://store.epicgames.com/free-games",
+      "cover": "https://cdn1.epicgames.com/spt-assets/46fc0cdb9f164a848e916249a8f68fc7/home-14ws1.png",
+      "sources": [
+        "epic-api",
+        "freetokeep",
+        "gamerpower"
+      ],
+      "platforms": [
+        "pc",
+        "android",
+        "ios"
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "fk-epic-mafia-hotel",
+      "title": "MAFIA HOTEL",
+      "titleZh": "",
+      "platform": "Epic Games Store",
+      "requiresPrime": false,
+      "giveaway": "epic",
+      "price": 1.99,
+      "platforms": [
+        "pc"
+      ],
+      "startAt": "2026-10-24T18:01:00.000Z",
+      "endAt": "2026-11-01T23:59:00.000Z",
+      "isCode": false,
+      "codeExpireAt": "",
+      "claimUrl": "https://freetokeep.gg/game/mafia-hotel",
+      "sourceUrl": "https://freetokeep.gg/game/mafia-hotel",
+      "cover": "https://cdn1.epicgames.com/spt-assets/f050bad3cfcd406f94bad85c0aa10177/mafia-hotel-rojye.png",
+      "sources": [
+        "freetokeep",
+        "gamerpower"
+      ],
+      "confidence": "low"
+    },
+    {
+      "id": "fk-epic-terraspace",
+      "title": "Terraspace",
+      "titleZh": "",
+      "platform": "Epic Games Store",
+      "requiresPrime": false,
+      "giveaway": "epic",
+      "price": 6.99,
+      "platforms": [
+        "pc"
+      ],
+      "startAt": "2026-10-21T20:00:00.000Z",
+      "endAt": "2026-10-27T23:59:00.000Z",
+      "isCode": false,
+      "codeExpireAt": "",
+      "claimUrl": "https://freetokeep.gg/game/terraspace",
+      "sourceUrl": "https://freetokeep.gg/game/terraspace",
+      "cover": "https://cdn1.epicgames.com/spt-assets/43ba8c8ffe2d4bdeb87704c260cce30c/dimond-hunt-1eqr4.png",
+      "sources": [
+        "freetokeep",
+        "gamerpower"
+      ],
+      "confidence": "low"
+    },
+    {
+      "id": "fk-epic-gethigh-exe",
+      "title": "GetHigh.EXE",
+      "titleZh": "",
+      "platform": "Epic Games Store",
+      "requiresPrime": false,
+      "giveaway": "epic",
+      "price": 1.99,
+      "platforms": [
+        "pc"
+      ],
+      "startAt": "2026-10-19T15:00:00.000Z",
+      "endAt": "2026-11-02T23:59:00.000Z",
+      "isCode": false,
+      "codeExpireAt": "",
+      "claimUrl": "https://freetokeep.gg/game/gethigh-exe",
+      "sourceUrl": "https://freetokeep.gg/game/gethigh-exe",
+      "cover": "https://cdn1.epicgames.com/spt-assets/c98f33cf3ea9491f926ce69fc9835ccf/gethighexe-8lmjv.png",
+      "sources": [
+        "freetokeep",
+        "gamerpower"
+      ],
+      "confidence": "low"
+    }
+  ],
+  "gog": [],
+  "steam": []
+}

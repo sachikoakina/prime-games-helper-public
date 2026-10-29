@@ -1,0 +1,81 @@
+# 自动抓取并同步游戏数据到云开发（GitHub Actions）
+# ------------------------------------------------------------------
+# 链路：抓 Prime + 抓限免 → 健康检查 → 推送到云函数 ingestGames → 云数据库 → 小程序读取
+#
+# 需要事先在仓库 Settings → Secrets and variables → Actions 里配好：
+#   INGEST_URL    云开发 HTTP 网关地址（.../ingestGames）
+#   INGEST_TOKEN  与云函数 ingestGames 环境变量一致的密钥
+#
+# 说明：三个脚本都只用 Python 标准库，不需要 pip install、也不需要 Playwright。
+# 健康检查的意义：ingestGames 会把「本次没带到」的游戏标成删除，
+#   若某次抓取只成功了一半就推送，会把正常游戏误删。所以不健康就跳过推送，
+#   云端保持旧数据（最多晚一轮更新），避免数据忽隐忽现。
+
+name: 自动抓取并同步游戏数据
+
+on:
+  schedule:
+    # 每 6 小时一次（GitHub 用 UTC；对应北京时间 02:00 / 08:00 / 14:00 / 20:00）
+    - cron: "0 */6 * * *"
+  workflow_dispatch:   # 允许在 Actions 页面手动点 “Run workflow”
+
+# 同一时间只允许一个实例在跑
+concurrency:
+  group: scrape
+  cancel-in-progress: false
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+
+      - name: 准备 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 抓取 Prime Gaming
+        id: prime
+        continue-on-error: true
+        run: python scraper/fetch_prime.py
+
+      - name: 抓取限免（Epic / GOG / Steam）
+        id: free
+        continue-on-error: true
+        run: python scraper/fetch_free.py
+
+      - name: 抓取健康检查（不健康则跳过推送，保护现有数据）
+        id: health
+        env:
+          PRIME_OUTCOME: ${{ steps.prime.outcome }}
+        run: python scraper/check_ready.py
+
+      - name: 推送到云开发数据库
+        if: steps.health.outputs.ok == 'true'
+        env:
+          INGEST_URL: ${{ secrets.INGEST_URL }}
+          INGEST_TOKEN: ${{ secrets.INGEST_TOKEN }}
+        run: |
+          if [ -z "$INGEST_URL" ] || [ -z "$INGEST_TOKEN" ]; then
+            echo "未配置 INGEST_URL / INGEST_TOKEN，跳过推送（开源模板默认行为）。"
+            echo "如需自动同步，请在仓库 Settings → Secrets and variables → Actions 中配置这两项。"
+            exit 0
+          fi
+          python scraper/push_cloud.py
+
+      - name: 保存本次快照（排查用，保留 7 天）
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: games-snapshot
+          path: |
+            scraper/data/games.json
+            scraper/data/free.json
+          if-no-files-found: ignore
+          retention-days: 7
+
+# 说明：本行用于让 GitHub 重新索引该工作流（无功能影响）

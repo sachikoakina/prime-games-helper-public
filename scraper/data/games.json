@@ -1,0 +1,309 @@
+{
+  "updatedAt": "2026-10-22T16:57:55.000Z",
+  "source": "https://nerdzap.com/free-games/prime-gaming/",
+  "note": "Prime Gaming / Amazon Luna 当前可领取清单（聚合站快照，非官方接口）",
+  "count": 12,
+  "list": [
+    {
+      "id": "prime-hue",
+      "title": "Hue",
+      "titleZh": "",
+      "platform": "Epic Games Store",
+      "requiresPrime": true,
+      "price": 0,
+      "rarity": "normal",
+      "tags": [
+        "👍 92% Very Positive on Steam"
+      ],
+      "cover": "https://assets.isthereanydeal.com/018d937f-0e07-713d-9b82-f0cbdcf0dce8/banner600.jpg?t=1786642285",
+      "startAt": "2026-09-24T17:00:00.000Z",
+      "endAt": "2026-10-28T17:00:00.000Z",
+      "claimUrl": "https://luna.amazon.com/claims/home",
+      "sourceUrl": "https://nerdzap.com/free-games/prime-gaming/",
+      "_status": "now"
+    },
+    {
+      "id": "prime-high-on-life",
+      "title": "High On Life",
+      "titleZh": "",
+      "platform": "Epic Games Store",
+      "requiresPrime": true,
+      "price": 0,
+      "rarity": "normal",
+      "tags": [
+        "👍 89% Very Positive on Steam"
+      ],
+      "cover": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/1583230/capsule_616x353.jpg?t=1792678709",
+      "startAt": "2026-09-24T17:00:00.000Z",
+      "endAt": "2026-10-28T17:00:00.000Z",
+      "claimUrl": "https://luna.amazon.com/claims/home",
+      "sourceUrl": "https://nerdzap.com/free-games/prime-gaming/",
+      "_status": "now"
+    },
+    {
+      "id": "prime-the-da-vinci-cryptex",
+      "title": "The Da Vinci Cryptex",
+      "titleZh": "",
+      "platform": "Amazon Games App",
+      "requiresPrime": true,
+      "price": 0,
+      "rarity": "normal",
+      "tags": [
+        "👍 56% 9 user reviews on Steam"
+      ],
+      "cover": "https://assets.isthereanydeal.com/018d937f-7826-7095-8235-7e301674b36d/banner600.jpg?t=1788244223",
+      "startAt": "2026-09-24T17:00:00.000Z",
+      "endAt": "2026-10-28T17:00:00.000Z",
+      "claimUrl": "https://luna.amazon.com/claims/home",
+      "sourceUrl": "https://nerdzap.com/free-games/prime-gaming/",
+      "_status": "now"
+    },
+    {
+      "id": "prime-havendock",
+      "title": "Havendock",
+      "titleZh": "",
+      "platform": "Amazon Games App",
+      "requiresPrime": true,
+      "price": 0,
+      "rarity": "normal",
+      "tags": [
+        "👍 79% Mostly Positive on Steam"
+      ],
+      "cover": "https://assets.isthereanydeal.com/018d937f-5f5b-718e-9d2d-93d6f0d24385/banner600.jpg?t=1790085319",
+      "startAt": "2026-08-27T17:00:00.000Z",
+      "endAt": "2026-10-28T17:00:00.000Z",
+      "claimUrl": "https://luna.amazon.com/claims/home",
+      "sourceUrl": "https://nerdzap.com/free-games/prime-gaming/",
+      "_status": "now"
+    },
+    {
+      "id": "prime-weakless",
+      "title": "Weakless",
+      "titleZh": "",
+      "platform": "GOG",
+      "requiresPrime": true,
+      "price": 0,
+      "rarity": "normal",
+      "tags": [
+        "👍 75% Mostly Positive on Steam"
+      ],
+      "cover": "https://assets.isthereanydeal.com/018d937f-1700-72ec-81d9-2a0232f26703/banner600.jpg?t=1790845528",
+      "startAt": "2026-07-30T17:00:00.000Z",
+      "endAt": "2026-10-28T17:00:00.000Z",
+      "claimUrl": "https://luna.amazon.com/claims/home",
+      "sourceUrl": "https://nerdzap.com/free-games/prime-gaming/",
+      "_status": "now",
+      "codeExpireAt": "2026-11-27T17:00:00.000Z",
+      "isCode": true
+    },
+    {
+      "id": "prime-zoria-age-of-shattering",
+      "title": "Zoria: Age of Shattering",
+      "titleZh": "",
+      "platform": "GOG",
+      "requiresPrime": true,
+      "price": 0,
+      "rarity": "normal",
+      "tags": [
+        "👍 79% Mostly Positive on Steam"
+      ],
+      "cover": "https://assets.isthereanydeal.com/018d937f-3895-736d-b2bd-ff87024b19ed/banner600.jpg?t=1790845219",
+      "startAt": "2026-07-30T17:00:00.000Z",
+      "endAt": "2026-10-28T17:00:00.000Z",
+      "claimUrl": "https://luna.amazon.com/claims/home",
+      "sourceUrl": "https://nerdzap.com/free-games/prime-gaming/",
+      "_status": "now",
+      "codeExpireAt": "2026-11-27T17:00:00.000Z",
+      "isCode": true
+    },
+    {
+      "id": "prime-five-nights-at-freddy-s-into-the-pit",
+      "title": "Five Nights at Freddy's: Into the Pit",
+      "titleZh": "",
+      "platform": "Epic Games Store",
+      "requiresPrime": true,
+      "price": 0,
+      "rarity": "normal",
+      "tags": [
+        "👍 96% Overwhelmingly Positive on Steam"
+      ],
+      "cover": "https://assets.isthereanydeal.com/018feea7-df02-734d-ad6a-11ee8fe7f2b4/banner600.jpg?t=1790881032",
+      "startAt": "2026-10-01T17:00:00.000Z",
+      "endAt": "2026-11-04T18:00:00.000Z",
+      "claimUrl": "https://luna.amazon.com/claims/home",
+      "sourceUrl": "https://nerdzap.com/free-games/prime-gaming/",
+      "_status": "now"
+    },
+    {
+      "id": "prime-doom",
+      "title": "DOOM",
+      "titleZh": "",
+      "platform": "GOG",
+      "requiresPrime": true,
+      "price": 0,
+      "rarity": "normal",
+      "tags": [
+        "👍 96% Overwhelmingly Positive on Steam"
+      ],
+      "cover": "https://assets.isthereanydeal.com/018d937e-fce8-716b-97f3-6a41f82bb9e7/banner600.jpg?t=1786648864",
+      "startAt": "2026-10-01T17:00:00.000Z",
+      "endAt": "2026-11-04T18:00:00.000Z",
+      "claimUrl": "https://luna.amazon.com/claims/home",
+      "sourceUrl": "https://nerdzap.com/free-games/prime-gaming/",
+      "_status": "now",
+      "codeExpireAt": "2026-12-04T18:00:00.000Z",
+      "isCode": true
+    },
+    {
+      "id": "prime-conarium",
+      "title": "Conarium",
+      "titleZh": "",
+      "platform": "GOG",
+      "requiresPrime": true,
+      "price": 0,
+      "rarity": "normal",
+      "tags": [
+        "👍 77% Mostly Positive on Steam"
+      ],
+      "cover": "https://assets.isthereanydeal.com/018d937f-00a6-738a-80d6-07c4f37c29e5/banner600.jpg?t=1786392704",
+      "startAt": "2026-10-08T17:00:00.000Z",
+      "endAt": "2026-11-11T18:00:00.000Z",
+      "claimUrl": "https://luna.amazon.com/claims/home",
+      "sourceUrl": "https://nerdzap.com/free-games/prime-gaming/",
+      "_status": "now",
+      "codeExpireAt": "2026-12-11T18:00:00.000Z",
+      "isCode": true
+    },
+    {
+      "id": "prime-vampire-the-masquerade-swansong",
+      "title": "Vampire: The Masquerade - Swansong",
+      "titleZh": "",
+      "platform": "Epic Games Store",
+      "requiresPrime": true,
+      "price": 0,
+      "rarity": "normal",
+      "tags": [
+        "👍 63% Mixed on Steam"
+      ],
+      "cover": "https://assets.isthereanydeal.com/018d937f-47cc-7291-8feb-1d56b3f996d7/banner600.jpg?t=1786212320",
+      "startAt": "2026-10-15T17:00:00.000Z",
+      "endAt": "2026-11-18T18:00:00.000Z",
+      "claimUrl": "https://luna.amazon.com/claims/home",
+      "sourceUrl": "https://nerdzap.com/free-games/prime-gaming/",
+      "_status": "now"
+    },
+    {
+      "id": "prime-caravan-sandwitch",
+      "title": "Caravan Sandwitch",
+      "titleZh": "",
+      "platform": "Amazon Games App",
+      "requiresPrime": true,
+      "price": 0,
+      "rarity": "normal",
+      "tags": [
+        "👍 86% Very Positive on Steam"
+      ],
+      "cover": "https://assets.isthereanydeal.com/018d937f-4d2c-73e0-8740-e9faf7d89fb0/banner600.jpg?t=1786987523",
+      "startAt": "2026-10-15T17:00:00.000Z",
+      "endAt": "2026-12-16T18:00:00.000Z",
+      "claimUrl": "https://luna.amazon.com/claims/home",
+      "sourceUrl": "https://nerdzap.com/free-games/prime-gaming/",
+      "_status": "now"
+    },
+    {
+      "id": "prime-warbreeds",
+      "title": "Warbreeds",
+      "titleZh": "",
+      "platform": "GOG",
+      "requiresPrime": true,
+      "price": 0,
+      "rarity": "normal",
+      "tags": [
+        "👍 84% Positive on Steam"
+      ],
+      "cover": "https://assets.isthereanydeal.com/018d937f-6fbd-718b-b101-ea26b95f6bca/banner600.jpg?t=1787767514",
+      "startAt": "2026-10-08T17:00:00.000Z",
+      "endAt": "2027-01-08T18:00:00.000Z",
+      "claimUrl": "https://luna.amazon.com/claims/home",
+      "sourceUrl": "https://nerdzap.com/free-games/prime-gaming/",
+      "_status": "now",
+      "codeExpireAt": "2027-02-07T18:00:00.000Z",
+      "isCode": true
+    },
+    {
+      "requiresPrime": true,
+      "price": 0,
+      "rarity": "normal",
+      "tags": [],
+      "claimUrl": "https://luna.amazon.com/claims/home",
+      "sourceUrl": "https://nerdzap.com/free-games/prime-gaming/",
+      "id": "epic-ad-infinitum",
+      "title": "Ad Infinitum",
+      "platform": "Epic Games Store",
+      "startAt": "2026-10-22T17:00:00.000Z",
+      "endAt": "2026-11-19T18:00:00.000Z",
+      "_status": "now"
+    },
+    {
+      "requiresPrime": true,
+      "price": 0,
+      "rarity": "normal",
+      "tags": [],
+      "claimUrl": "https://luna.amazon.com/claims/home",
+      "sourceUrl": "https://nerdzap.com/free-games/prime-gaming/",
+      "id": "lg-time-travel-escape-room",
+      "title": "Time Travel: Escape Room Game",
+      "titleZh": "密室逃脱游戏 – 穿越时空",
+      "platform": "Legacy Games",
+      "isCode": true,
+      "codeExpireAt": "2026-12-19T18:00:00.000Z",
+      "startAt": "2026-10-22T17:00:00.000Z",
+      "endAt": "2026-11-19T18:00:00.000Z",
+      "_status": "now"
+    },
+    {
+      "requiresPrime": true,
+      "price": 0,
+      "rarity": "normal",
+      "tags": [],
+      "claimUrl": "https://luna.amazon.com/claims/home",
+      "sourceUrl": "https://nerdzap.com/free-games/prime-gaming/",
+      "id": "epic-trash-goblin",
+      "title": "Trash Goblin",
+      "platform": "Epic Games Store",
+      "startAt": "2026-10-29T17:00:00.000Z",
+      "endAt": "2026-11-26T18:00:00.000Z",
+      "_status": "soon"
+    },
+    {
+      "requiresPrime": true,
+      "price": 0,
+      "rarity": "normal",
+      "tags": [],
+      "claimUrl": "https://luna.amazon.com/claims/home",
+      "sourceUrl": "https://nerdzap.com/free-games/prime-gaming/",
+      "id": "amazon-kiborg",
+      "title": "Kiborg",
+      "platform": "Amazon Games App",
+      "startAt": "2026-10-29T17:00:00.000Z",
+      "endAt": "2026-11-26T18:00:00.000Z",
+      "_status": "soon"
+    },
+    {
+      "requiresPrime": true,
+      "price": 0,
+      "rarity": "normal",
+      "tags": [],
+      "claimUrl": "https://luna.amazon.com/claims/home",
+      "sourceUrl": "https://nerdzap.com/free-games/prime-gaming/",
+      "id": "ms-doom-eternal",
+      "title": "DOOM Eternal",
+      "platform": "Microsoft Store",
+      "isCode": true,
+      "codeExpireAt": "2026-11-20T18:00:00.000Z",
+      "startAt": "2026-09-25T17:00:00.000Z",
+      "endAt": "2026-10-21T18:00:00.000Z",
+      "_status": "ended"
+    }
+  ]
+}
