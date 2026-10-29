@@ -1,9 +1,5 @@
 # prime-games-helper-public · 数据源
 
-为微信小程序「领了吗（Claimed?）」提供免费游戏数据的采集与同步仓库。
-
-**本仓库只负责数据链路，不包含小程序源码。**
-
 ## 它做什么
 
 GitHub Actions 每 6 小时自动运行一次：
