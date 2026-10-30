@@ -104,7 +104,10 @@ def normalize(raw):
 
     start_ms = parse_ms(raw.get("startAt"))
     if start_ms is None:
-        start_ms = end_ms - 30 * 86400000   # 没上架时间：按截止前 30 天算
+        # 没有开始时间 = 已经在送。取 min(截止前 30 天, 现在)：
+        # 既保留窗口进度条的量纲，又保证任何情况下都不会被误判成「待开始」
+        start_ms = min(end_ms - 30 * 86400000,
+                       int(datetime.now(timezone.utc).timestamp() * 1000))
 
     price = raw.get("price")
     try:

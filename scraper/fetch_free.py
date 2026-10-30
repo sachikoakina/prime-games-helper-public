@@ -193,7 +193,11 @@ def iso(ms):
 
 
 def active_window_ms(start_iso, end_iso, now):
-    """返回 'active' | 'upcoming' | 'ended' | ''（解析失败）"""
+    """返回 'active' | 'upcoming' | 'ended' | ''（解析失败）
+
+    ⚠ 仅供诊断/日志。不要用它过滤条目：'upcoming' 必须保留下来，进入小程序的
+    「待开始」分组；只有 'ended' 才能丢（merge_section 已按 end <= now 丢弃）。
+    """
     try:
         s = datetime.strptime(start_iso, "%Y-%m-%dT%H:%M:%S.000Z") if start_iso else None
         e = datetime.strptime(end_iso, "%Y-%m-%dT%H:%M:%S.000Z") if end_iso else None
@@ -241,18 +245,23 @@ def fetch_epic_official():
             if not title:
                 continue
             # 找促销窗口（当前 + 预告）
+            # 注意字段名：Epic 给的是 upcomingPromotionalOffers。
+            # 旧代码读 upcomingPromotions（不存在），所以「下周限免」从来没被抓到过。
             promos = []
             promos += ((el.get("promotions") or {}).get("promotionalOffers") or [])
-            promos += ((el.get("promotions") or {}).get("upcomingPromotions") or [])
+            promos += ((el.get("promotions") or {}).get("upcomingPromotionalOffers") or [])
             for grp in promos:
                 for off in (grp.get("promotionalOffers") or []):
-                    ds = (off.get("discountSetting") or {})
-                    pct = ds.get("discountPercentage")
+                    # 免费只认「折后价 = 0」。旧写法拿折扣百分比判断，
+                    # 会把「0% 折扣、但原价照收」的预告（例如 ¥75 的那款）误收成免费；
+                    # 反过来折扣 100% 的条目又会因为 pct 不是 0 被误杀。
                     disc = (el.get("price", {}).get("totalPrice", {}) or {}).get("discountPrice")
-                    if pct not in (0, 0.0) and disc != 0:
-                        continue  # 不是免费
+                    if disc not in (None, 0, 0.0):
+                        continue  # 折后价不是 0 → 不是免费
                     start = to_iso(off.get("startDate"))
                     end = to_iso(off.get("endDate"))
+                    if not start or not end:
+                        continue
                     # 中区/美区标题不同（中文 vs 英文），必须按官方条目 id 合并
                     key = eid or title.lower()
                     cur = out.setdefault(key, {
@@ -263,8 +272,9 @@ def fetch_epic_official():
                         "requiresPrime": False,
                         "giveaway": "epic",
                         "price": 0,
-                        "startAt": start,
-                        "endAt": end,
+                        "startAt": "",
+                        "endAt": "",
+                        "_windows": [],
                         "isCode": False,
                         "codeExpireAt": "",
                         "claimUrl": "",
@@ -272,11 +282,11 @@ def fetch_epic_official():
                         "cover": "",
                         "sources": [],
                     })
-                    # 时间取更晚的窗口（同款多促销时保留最长）
-                    if start and (not cur["startAt"] or start < cur["startAt"]):
-                        cur["startAt"] = start
-                    if end and (not cur["endAt"] or end > cur["endAt"]):
-                        cur["endAt"] = end
+                    # 同一款可能有多个窗口（本周送 + 下月再送）：全部攒起来，
+                    # 最后只挑一个，绝不把首尾拼成「今年 10 月 ~ 明年 1 月」的超长区间
+                    pair = (start, end)
+                    if pair not in cur["_windows"]:
+                        cur["_windows"].append(pair)
                     if tag == "zh" and has_cjk(title):
                         cur["titleZh"] = title  # 中区标题即中文
                     if tag == "us":
@@ -303,6 +313,19 @@ def fetch_epic_official():
                         cur["sources"].append("epic-api")
     if not out and (err1 or err2):
         return [], "epic-api 不可达：%s / %s" % (err1, err2)
+    # 同款多窗口 → 只留一个：优先「正在进行」的，其次「最近的未来窗口」，
+    # 全部窗口都已结束的条目直接丢弃（等价于以前「已结束不收」）
+    now_iso = now_utc().strftime("%Y-%m-%dT%H:%M:%S.000Z")
+    for key in list(out.keys()):
+        cur = out[key]
+        wins = cur.pop("_windows", [])
+        live = [w for w in wins if w[0] <= now_iso < w[1]]
+        fut = sorted([w for w in wins if w[0] > now_iso])
+        pick = live[0] if live else (fut[0] if fut else None)
+        if not pick:
+            out.pop(key, None)
+            continue
+        cur["startAt"], cur["endAt"] = pick
     # 条目 id 用最终（英文）标题生成，保证稳定且不重复
     for cur in out.values():
         slug = re.sub(r"[^a-zA-Z0-9]+", "-", cur["title"].lower()).strip("-") or "item"

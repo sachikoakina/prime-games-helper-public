@@ -257,7 +257,9 @@ def parse_page(page):
             "rarity": "normal",
             "tags": tags,
             "cover": cover,
-            "startAt": start_iso or end_iso,   # 无开始时间时按已开放处理
+            # 有 data-start 才写；没有就留空，让下游按「已在送」兜底。
+            # 旧写法拿 endAt 冒充 startAt，会把 _status=soon 的预告伪装成已开始。
+            "startAt": start_iso,
             "endAt": end_iso,
             "claimUrl": claim,
             "sourceUrl": SRC_URL,
