@@ -168,13 +168,35 @@ def parse_price(s):
 
 def norm_title(s):
     """归一标题：小写、去标点空白，用于跨源合并/去重。
-    顺带剥掉聚合源加的「(Epic Games) Giveaway」这类后缀，
+    顺带剥掉聚合源加的「(Epic Games) Giveaway(s)」这类后缀，
     否则官方条目和交叉源条目合不到一起。"""
     s = str(s or "").lower()
     s = re.sub(r"\((?:epic games store|epic games|epic|gog|steam|pc)\)\s*"
-               r"(?:giveaway|free|freebie|100% off)\s*", "", s)
-    s = re.sub(r"\b(?:giveaway|freebie)\b", "", s)
+               r"(?:giveaways?|free|freebies?|100% off)\s*", "", s)
+    s = re.sub(r"\b(?:giveaways?|freebies?)\b", "", s)
     return re.sub(r"[^a-z0-9\u4e00-\u9fff]+", "", s)
+
+
+# 聚合源（主要是 GamerPower）会把商店名和活动词拼进标题尾部：
+#   "GMH - Good Morning Human (Epic Games) Giveaways"
+# 展示层不该出现这种残留。只在标题**尾部**剥一次括号平台词 + 活动词，
+# 中间的括号（游戏名自带，如 "Hue (Original Soundtrack)"）不动。
+RE_TAIL_TAG = re.compile(
+    r"[\s\-–—:|]*[\(（]\s*(?:epic games store|epic games|epic|gog|steam|pc|"
+    r"android|ios)\s*[\)）]\s*(?:giveaways?|free|freebies?|100% off)?\s*$",
+    re.I,
+)
+
+
+def clean_title(title):
+    """剥掉标题尾部的「(商店) 活动词」残留；剥完为空则返回原标题（宁缺勿错）。"""
+    s = str(title or "").strip()
+    while True:
+        s2 = RE_TAIL_TAG.sub("", s).strip(" -–—:|")
+        if s2 == s or not s2:
+            break
+        s = s2
+    return s if s else str(title or "")
 
 
 def has_cjk(s):
@@ -346,7 +368,7 @@ def fetch_freetokeep(store):
         return [], "freetokeep json:" + str(e)[:80]
     out = {}
     for it in items:
-        title = (it.get("title") or "").strip()
+        title = clean_title((it.get("title") or "").strip())
         end = to_iso(it.get("endsAt"))
         start = to_iso(it.get("startsAt"))
         key = norm_title(title)
@@ -441,7 +463,7 @@ def fetch_gamerpower(plat):
     for it in items:
         if not isinstance(it, dict):
             continue
-        title = (it.get("title") or "").strip()
+        title = clean_title((it.get("title") or "").strip())
         if not title:
             continue
         out.append({
@@ -568,6 +590,14 @@ def merge_section(main_items, cross_items, official_names, now_ms):
             if len(key) >= 4 and k.startswith(key):
                 return k
             if len(k) >= 4 and key.startswith(k):
+                return k
+        # 包含匹配：跨源一方带前缀/缩写（如 "GMH - Good Morning Human"）时
+        # 归一键互不为前缀，但长的包含短的。阈值 12 字符防误伤
+        # （"doom" ⊂ "doometernal" 这类短名仍只走前缀规则）。
+        for k in by_key:
+            if len(k) >= 12 and k in key:
+                return k
+            if len(key) >= 12 and key in k:
                 return k
         return None
 
