@@ -48,6 +48,11 @@ jobs:
         continue-on-error: true
         run: python scraper/fetch_free.py
 
+      - name: 抓取官方公告预告（未来排期）
+        id: preview
+        continue-on-error: true
+        run: python scraper/fetch_prime_preview.py
+
       - name: 抓取健康检查（不健康则跳过推送，保护现有数据）
         id: health
         env:
@@ -75,6 +80,7 @@ jobs:
           path: |
             scraper/data/games.json
             scraper/data/free.json
+            scraper/data/preview.json
           if-no-files-found: ignore
           retention-days: 7
 

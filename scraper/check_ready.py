@@ -73,8 +73,17 @@ def main():
         for k in ("epic", "gog", "steam"):
             n_free += len(free.get(k) or [])
 
-    print("统计：Prime=%d 条，限免=%d 条，源状态=%s"
-          % (n_prime, n_free, json.dumps(status, ensure_ascii=False)))
+    # 预告（preview.json）只做增量，不参与健康判定：公告源暂时抓不到时
+    # 不应该阻止主数据推送（预告缺一轮，下一轮自动补上）。
+    n_preview = 0
+    try:
+        preview = load(os.path.join(HERE, "data", "preview.json"))
+        n_preview = len(preview.get("list") or [])
+    except Exception:  # noqa: BLE001
+        pass
+
+    print("统计：Prime=%d 条，限免=%d 条，预告=%d 条，源状态=%s"
+          % (n_prime, n_free, n_preview, json.dumps(status, ensure_ascii=False)))
 
     # 4) 总数为 0 也没意义
     if n_prime + n_free == 0:

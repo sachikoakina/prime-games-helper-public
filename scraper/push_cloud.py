@@ -5,7 +5,8 @@ push_cloud.py — 把本地抓到的数据推送到云开发数据库（B 档数
 ==================================================================
 它做什么：
     读 scraper/data/games.json（Prime 每月游戏）+ scraper/data/free.json
-    （Epic / GOG / Steam 限免），合并去重后 POST 给云函数 ingestGames，
+    （Epic / GOG / Steam 限免）+ scraper/data/preview.json（官方公告预告，
+    未来排期），合并去重后 POST 给云函数 ingestGames，
     由它写入云开发的 games 集合并更新 meta/sync 的时间戳。
 
 需要什么（只需一次）：
@@ -19,6 +20,7 @@ push_cloud.py — 把本地抓到的数据推送到云开发数据库（B 档数
     python scraper/push_cloud.py --url https://xxx/ingestGames --token abc123
     python scraper/push_cloud.py --only prime     # 只推 Prime 每月游戏
     python scraper/push_cloud.py --only free      # 只推限免
+    python scraper/push_cloud.py --only preview   # 只推官方公告预告
 
 退出码：0 成功 / 1 失败（数据没推上去，本地文件不受影响）
 """
@@ -37,6 +39,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(HERE, "data")
 GAMES_JSON = os.path.join(DATA_DIR, "games.json")
 FREE_JSON = os.path.join(DATA_DIR, "free.json")
+PREVIEW_JSON = os.path.join(DATA_DIR, "preview.json")
 
 
 # ---------------------------------------------------------------- 读数据
@@ -70,6 +73,15 @@ def collect_free():
     for key in ("epic", "gog", "steam"):
         out.extend(list(doc.get(key) or []))
     return out
+
+
+def collect_preview():
+    """官方公告预告（未来排期）：preview.json 的 list 字段。
+    条目带 preview/estimated/confidence 标记，normalize() 会透传给云端。"""
+    doc = load_json(PREVIEW_JSON)
+    if not doc:
+        return []
+    return list(doc.get("list") or [])
 
 
 # ---------------------------------------------------------------- 归一
@@ -137,6 +149,15 @@ def normalize(raw):
     # 兑换码有效期：仅展示用，不参与买号策略
     if raw.get("codeExpireAt"):
         out["codeExpireAt"] = raw["codeExpireAt"]
+    # 官方公告预告标记：preview=公告排期条目，estimated=startAt/endAt 为估算值。
+    # 前端据此进「待开始」/日历预告区并显示「公告预告」角标；云端不认识这些
+    # 字段时旧版 ingestGames 会静默丢弃，条目仍按普通游戏展示，只是没角标。
+    if raw.get("preview"):
+        out["preview"] = True
+    if raw.get("estimated"):
+        out["estimated"] = True
+    if raw.get("confidence"):
+        out["confidence"] = str(raw["confidence"])[:10]
     return out
 
 
@@ -146,6 +167,8 @@ def build_list(only):
         raw_items.extend(collect_prime())
     if only in (None, "all", "free"):
         raw_items.extend(collect_free())
+    if only in (None, "all", "preview"):
+        raw_items.extend(collect_preview())
 
     items = []
     seen = {}
@@ -185,7 +208,7 @@ def main():
     ap.add_argument("--url", help="INGEST_URL（HTTP 网关地址）")
     ap.add_argument("--token", help="INGEST_TOKEN")
     ap.add_argument("--dry-run", action="store_true", help="只统计，不推送")
-    ap.add_argument("--only", choices=["all", "prime", "free"], default="all",
+    ap.add_argument("--only", choices=["all", "prime", "free", "preview"], default="all",
                     help="只推哪一类，默认全部")
     args = ap.parse_args()
 
