@@ -53,6 +53,7 @@ import argparse
 import gzip
 import html
 import json
+import os
 import re
 import ssl
 import subprocess
@@ -60,6 +61,10 @@ import sys
 import urllib.request
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+
+# 同目录共享模块（同 fetch_prime.py：显式注入以兼容 `python -I` / 任意 cwd）
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import nerdzap
 
 SEARCH_URL = "https://twistedvoxel.com/?s=prime+gaming"
 ARTICLE_URL_HINT = "https://twistedvoxel.com/amazon-prime-gaming-"
@@ -282,16 +287,8 @@ def fetch_announcement():
 
 
 # --------------------------------------------------------------------------- #
-# 源 B：NerdZap soon 卡（与 fetch_prime.py 同一套解析，只留未开始的）
+# 源 B：NerdZap soon 卡（解析在 nerdzap.py，只留未开始的）
 # --------------------------------------------------------------------------- #
-
-def attr(tag_text, name):
-    m = re.search(r"""\b%s\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))""" % re.escape(name),
-                  tag_text)
-    if not m:
-        return ""
-    return html.unescape(next(g for g in m.groups() if g is not None))
-
 
 def to_iso(v):
     if not v:
@@ -304,6 +301,7 @@ def to_iso(v):
 
 
 def fetch_nerdzap(now_iso):
+    """NerdZap 的 soon 卡（解析共用 nerdzap.py，只留还没开始的）。"""
     try:
         page = http_get(NERDZAP_URL)
     except Exception as e:  # noqa: BLE001
@@ -311,45 +309,22 @@ def fetch_nerdzap(now_iso):
     blocked = looks_blocked(page)
     if blocked:
         return [], "nerdzap 命中风控页（%s）" % blocked
-    blocks = re.findall(r'<article\b[^>]*class="[^"]*fg-card[^"]*"[^>]*>(.*?)</article>',
-                        page, re.S)
-    if not blocks:
+    cards = nerdzap.parse_cards(page)
+    if not cards:
         return [], "nerdzap 页面解析不到卡片（可能改版）"
     items = []
-    for b in blocks:
-        t = re.search(r'<h3[^>]*class="[^"]*fg-title[^"]*"[^>]*>(.*?)</h3>', b, re.S)
-        if not t:
-            continue
-        title = strip_tags(t.group(1))
-        time_tag = re.search(r'<span[^>]*class="[^"]*fg-time[^"]*"([^>]*)>', b)
-        start_iso = end_iso = ""
-        if time_tag:
-            a = time_tag.group(1)
-            start_iso = to_iso(attr(a, "data-start"))
-            end_iso = to_iso(attr(a, "data-end"))
-        status = attr(time_tag.group(1), "data-status") if time_tag else ""
-        if not end_iso:
+    for c in cards:
+        if not c["endAt"]:
             continue
         # 只留「还没开始」的预告卡；已开始的由主链路（games.json）负责
-        if not (status == "soon" or (start_iso and start_iso > now_iso)):
+        if not (c["status"] == "soon" or (c["startAt"] and c["startAt"] > now_iso)):
             continue
-        cover = ""
-        m = re.search(r'<img[^>]*\ssrc="([^"]+)"', b)
-        if m:
-            cover = html.unescape(m.group(1))
-        store = re.search(r'fg-store[^>]*>(.*?)</span>', b, re.S)
-        store_low = strip_tags(store.group(1)).lower() if store else ""
-        platform = "Amazon Games App"
-        for key, val in PLATFORM_MAP.items():
-            if key in store_low:
-                platform = val
-                break
         items.append({
-            "title": title,
-            "platform": platform,
-            "startAt": start_iso,
-            "endAt": end_iso,
-            "cover": cover,
+            "title": c["title"],
+            "platform": c["platform"],
+            "startAt": c["startAt"],
+            "endAt": c["endAt"],
+            "cover": c["cover"],
             "sourceUrl": NERDZAP_URL,
         })
     return items, ""

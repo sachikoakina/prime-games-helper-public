@@ -1,0 +1,98 @@
+{
+  "updatedAt": "2026-11-08T15:39:17.000Z",
+  "source": "announcement+nerdzap+freetokeep",
+  "note": "Prime Gaming 官方公告预告（未来排期，含估算时间）",
+  "count": 5,
+  "list": [
+    {
+      "title": "Jurassic World Evolution 2",
+      "platform": "Epic Games Store",
+      "startAt": "2026-11-12T18:00:00.000Z",
+      "sourceUrl": "https://twistedvoxel.com/amazon-prime-gaming-november-2026-wrc-generations/",
+      "endAt": "2026-12-16T18:00:00.000Z",
+      "estimated": true,
+      "sources": [
+        "announcement"
+      ],
+      "confidence": "low",
+      "id": "preview-jurassic-world-evolution-2",
+      "titleZh": "",
+      "requiresPrime": true,
+      "price": 0,
+      "preview": true,
+      "claimUrl": "https://luna.amazon.com/claims/home"
+    },
+    {
+      "title": "Radiolight",
+      "platform": "Epic Games Store",
+      "startAt": "2026-11-12T18:00:00.000Z",
+      "sourceUrl": "https://twistedvoxel.com/amazon-prime-gaming-november-2026-wrc-generations/",
+      "endAt": "2026-12-16T18:00:00.000Z",
+      "estimated": true,
+      "sources": [
+        "announcement"
+      ],
+      "confidence": "low",
+      "id": "preview-radiolight",
+      "titleZh": "",
+      "requiresPrime": true,
+      "price": 0,
+      "preview": true,
+      "claimUrl": "https://luna.amazon.com/claims/home"
+    },
+    {
+      "title": "Werewolf: The Apocalypse – Earthblood",
+      "platform": "Epic Games Store",
+      "startAt": "2026-11-19T18:00:00.000Z",
+      "sourceUrl": "https://twistedvoxel.com/amazon-prime-gaming-november-2026-wrc-generations/",
+      "endAt": "2026-12-23T18:00:00.000Z",
+      "estimated": true,
+      "sources": [
+        "announcement"
+      ],
+      "confidence": "low",
+      "id": "preview-werewolf-the-apocalypse-earthblood",
+      "titleZh": "",
+      "requiresPrime": true,
+      "price": 0,
+      "preview": true,
+      "claimUrl": "https://luna.amazon.com/claims/home"
+    },
+    {
+      "title": "Clem",
+      "platform": "Epic Games Store",
+      "startAt": "2026-11-19T18:00:00.000Z",
+      "sourceUrl": "https://twistedvoxel.com/amazon-prime-gaming-november-2026-wrc-generations/",
+      "endAt": "2026-12-23T18:00:00.000Z",
+      "estimated": true,
+      "sources": [
+        "announcement"
+      ],
+      "confidence": "low",
+      "id": "preview-clem",
+      "titleZh": "",
+      "requiresPrime": true,
+      "price": 0,
+      "preview": true,
+      "claimUrl": "https://luna.amazon.com/claims/home"
+    },
+    {
+      "title": "Arcadia Fallen",
+      "platform": "Amazon Games App",
+      "startAt": "2026-11-24T18:00:00.000Z",
+      "sourceUrl": "https://twistedvoxel.com/amazon-prime-gaming-november-2026-wrc-generations/",
+      "endAt": "2026-12-28T18:00:00.000Z",
+      "estimated": true,
+      "sources": [
+        "announcement"
+      ],
+      "confidence": "low",
+      "id": "preview-arcadia-fallen",
+      "titleZh": "",
+      "requiresPrime": true,
+      "price": 0,
+      "preview": true,
+      "claimUrl": "https://luna.amazon.com/claims/home"
+    }
+  ]
+}
