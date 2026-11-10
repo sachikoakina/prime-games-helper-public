@@ -1,0 +1,90 @@
+# 保活（keepalive）
+# ------------------------------------------------------------------
+# 目的：防止 GitHub 对「公开仓库」的 scheduled workflow 在 60 天无仓库活动后
+#       自动禁用。本仓库的 scrape.yml 只抓取并推送数据、从不写回仓库，
+#       因此自然可能长期无提交，需要这条预防性维护。
+#
+# 机制：每周检查默认分支最后一次提交时间
+#         距今 <  45 天 → 跳过
+#         距今 >= 45 天 → 创建一个空提交并推送，重置 60 天计时
+#
+# 边界：保活只能「预防」被禁用，不能在已被禁用后自救——workflow 一旦被禁用，
+#       schedule 不再触发，本文件也就不会运行，只能人工 Enable 或改用外部调度。
+#
+# 独立性：与 scrape.yml 完全解耦
+#         · 不读取 INGEST_URL / INGEST_TOKEN 等业务 Secrets
+#         · 不调用业务接口、不 checkout 额外依赖
+#         · 独立 concurrency 组、独立权限（仅 contents: write）
+#         · 失败互不阻塞
+#
+# 前置条件：
+#   1. 仓库为 public（60 天规则只针对公开仓库；私有仓无需本工作流）
+#   2. Settings → Actions → General → Workflow permissions = Read and write
+#      否则 push 返回 403，且工作流无法自行提权
+#
+# 验证：合并到默认分支后在 Actions 页手动 Run workflow，勾选 force=true，
+#       应产生一个空提交且运行结果为绿色。
+# ------------------------------------------------------------------
+
+name: keepalive
+
+on:
+  schedule:
+    # 每周一 03:17 UTC（北京时间 11:17）。
+    # 周期远小于 60 天：单次延迟或失败不会踩线，45 天阈值 + 7 天周期最坏约 52 天触发。
+    - cron: '17 3 * * 1'
+  workflow_dispatch:
+    inputs:
+      force:
+        description: '忽略 45 天阈值，立即创建一次保活提交'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+# 与 scrape.yml 分开，避免两个工作流互相排队；保留排队而非并发执行。
+concurrency:
+  group: keepalive
+  cancel-in-progress: false
+
+jobs:
+  keepalive:
+    # 只作用于默认分支：手动在其他分支运行时跳过，避免提交到无效分支
+    if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create activity commit when due
+        env:
+          FORCE: ${{ github.event.inputs.force || 'false' }}
+          THRESHOLD_DAYS: '45'
+        run: |
+          set -euo pipefail
+
+          last_ts=$(git log -1 --format=%ct)
+          now_ts=$(date -u +%s)
+          age_days=$(( (now_ts - last_ts) / 86400 ))
+
+          echo "默认分支最后一次提交：$(date -u -d "@${last_ts}" '+%Y-%m-%d %H:%M:%S UTC')"
+          echo "距今 ${age_days} 天（阈值 ${THRESHOLD_DAYS} 天，force=${FORCE}）"
+
+          if [ "${FORCE}" != "true" ] && [ "${age_days}" -lt "${THRESHOLD_DAYS}" ]; then
+            echo "近期有提交活动，跳过。"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # 空提交：不产生文件冲突、不污染业务文件，但同样算仓库活动。
+          # 用 GITHUB_TOKEN 推送不会递归触发其他 workflow，无需 [skip ci]。
+          git commit --allow-empty -m "chore(keepalive): $(date -u +%Y-%m-%d)" \
+            -m "自动保活：默认分支超过 ${age_days} 天无提交，创建一个空提交以重置 GitHub 公开仓库 scheduled workflow 的 60 天无活动计时。"
+
+          # 显式指定目标分支，避免 schedule 触发时 checkout 处于 detached HEAD 导致 push 失败
+          git push origin "HEAD:${GITHUB_REF_NAME}"
